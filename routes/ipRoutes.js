@@ -31,9 +31,26 @@ function isTorExitNode(ip) {
 setInterval(downloadTorExitNodeList, 24 * 60 * 60 * 1000);
 downloadTorExitNodeList();
 
+function filterFields(data, requestedFields) {
+  if (!requestedFields) {
+    return data;
+  }
+
+  const fieldsArray = requestedFields.split(',').map(field => field.trim());
+  const filteredData = {};
+
+  for (const field of fieldsArray) {
+    if (data.hasOwnProperty(field)) {
+      filteredData[field] = data[field];
+    }
+  }
+
+  return filteredData;
+}
+
 router.get('/:ip', async (req, res) => {
   const { ip } = req.params;
-  const { output } = req.query;
+  const { output, fields, callback } = req.query;
 
   try {
     const response1 = await axios.get(`http://ipwho.is/${ip}`);
@@ -50,7 +67,7 @@ router.get('/:ip', async (req, res) => {
 
     const isTor = isTorExitNode(ip);
 
-    const result = {
+    let result = {
       ip,
       success: data1.success,
       message: data1.message,
@@ -77,6 +94,8 @@ router.get('/:ip', async (req, res) => {
       utc: new Date().toUTCString(),
     };
 
+    result = filterFields(result, fields);
+
     let responseContent;
     let contentType = 'application/json';
     switch (output) {
@@ -90,6 +109,11 @@ router.get('/:ip', async (req, res) => {
         break;
       default:
         responseContent = JSON.stringify(result);
+    }
+
+    if (callback) {
+      responseContent = `${callback}(${responseContent})`;
+      contentType = 'application/javascript';
     }
 
     res.setHeader('Content-Type', contentType);
