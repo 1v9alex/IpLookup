@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IP Lookup API Documentation</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    h1 { color: #2E3A87; }
+    h2 { color: #1E1E1E; }
+    pre { background-color: #F4F4F4; border: 1px solid #E0E0E0; padding: 10px; }
+    code { background-color: #F4F4F4; padding: 2px 5px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #DDD; padding: 8px; text-align: left; }
+    th { background-color: #2E3A87; color: #FFFFFF; }
+  </style>
+</head>
+<body>
+  <h1>IP Lookup API Documentation</h1>
+
+  <h2>Getting Started</h2>
+  <ul>
+    <li><strong>Base URL:</strong> <code>http://your-api-domain/api/ip</code></li>
+    <li><strong>Authentication:</strong> None required</li>
+    <li><strong>Rate Limiting:</strong> 50 requests per hour per IP</li>
+  </ul>
+
+  <h2>Endpoints</h2>
+  <h3>/api/ip/{ip}</h3>
+  <p><strong>Method:</strong> <code>GET</code></p>
+  <p><strong>Description:</strong> Retrieves information for the specified IP address.</p>
+  <p><strong>Parameters:</strong></p>
+  <ul>
+    <li><strong>Path Parameter:</strong>
+      <ul>
+        <li><code>ip</code> (string, required): The IP address to query.</li>
+      </ul>
+    </li>
+    <li><strong>Query Parameters:</strong>
+      <ul>
+        <li><code>output</code> (string, optional): Specifies the output format (<code>json</code> - default, <code>xml</code>, <code>csv</code>).</li>
+        <li><code>fields</code> (string, optional): Comma-separated list of fields to include in the response.</li>
+        <li><code>callback</code> (string, optional): Function name for JSONP callback.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h2>Response Fields</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Field</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>ip</td><td>Queried IP address</td></tr>
+      <tr><td>success</td><td>Indicates if the query was successful</td></tr>
+      <tr><td>message</td><td>Response message (only present if <code>success</code> is false)</td></tr>
+      <tr><td>type</td><td><code>IPv4</code> or <code>IPv6</code></td></tr>
+      <tr><td>continent</td><td>Continent name</td></tr>
+      <tr><td>continent_code</td><td>Continent code</td></tr>
+      <tr><td>country</td><td>Country name</td></tr>
+      <tr><td>country_code</td><td>Country code</td></tr>
+      <tr><td>region</td><td>Region name</td></tr>
+      <tr><td>region_code</td><td>Region code</td></tr>
+      <tr><td>city</td><td>City name</td></tr>
+      <tr><td>coordinates</td><td>Latitude and longitude, formatted as <code>latitude, longitude</code></td></tr>
+      <tr><td>postalCode</td><td>Postal code</td></tr>
+      <tr><td>callingCode</td><td>Country calling code</td></tr>
+      <tr><td>timezoneID</td><td>Time zone identifier</td></tr>
+      <tr><td>isp</td><td>Internet Service Provider name</td></tr>
+      <tr><td>org</td><td>Organization name</td></tr>
+      <tr><td>asn</td><td>Autonomous System Number and associated organization</td></tr>
+      <tr><td>mobile</td><td>Whether the IP is associated with a mobile network</td></tr>
+      <tr><td>proxy</td><td>Whether the IP is a known proxy</td></tr>
+      <tr><td>hosting</td><td>Whether the IP is associated with a hosting provider</td></tr>
+      <tr><td>vpn</td><td>Whether the IP is a known VPN</td></tr>
+      <tr><td>tor</td><td>Whether the IP is a known Tor exit node</td></tr>
+      <tr><td>utc</td><td>Current UTC timestamp</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Response Examples</h2>
+  <h3>JSON</h3>
+  <pre><code>{
+    "ip": "8.8.4.4",
+    "type": "IPv4",
+    "continent": "North America",
+    "country": "United States",
+    "city": "Mountain View",
+    "timezoneID": "America/Los_Angeles",
+    "isp": "Google LLC",
+    "tor": false,
+    "utc": "Thu, 09 May 2024 01:40:51 GMT"
+  }</code></pre>
+
+  <h3>XML</h3>
+  <pre><code>&lt;response&gt;
+  &lt;ip&gt;8.8.4.4&lt;/ip&gt;
+  &lt;type&gt;IPv4&lt;/type&gt;
+  &lt;continent&gt;North America&lt;/continent&gt;
+  &lt;country&gt;United States&lt;/country&gt;
+  &lt;city&gt;Mountain View&lt;/city&gt;
+  &lt;timezoneID&gt;America/Los_Angeles&lt;/timezoneID&gt;
+  &lt;isp&gt;Google LLC&lt;/isp&gt;
+  &lt;tor&gt;false&lt;/tor&gt;
+  &lt;utc&gt;Thu, 09 May 2024 01:40:51 GMT&lt;/utc&gt;
+&lt;/response&gt;
+</code></pre>
+
+  <h3>CSV</h3>
+  <pre><code>ip,type,continent,country,city,timezoneID,isp,tor,utc
+8.8.4.4,IPv4,North America,United States,Mountain View,America/Los_Angeles,Google LLC,false,Thu, 09 May 2024 01:40:51 GMT
+</code></pre>
+
+  <h2>Usage Examples</h2>
+  <h3>Basic Request</h3>
+  <pre><code>http://your-api-domain/api/ip/8.8.4.4</code></pre>
+
+  <h3>Filtered Fields</h3>
+  <pre><code>http://your-api-domain/api/ip/8.8.4.4?fields=ip,country,city</code></pre>
+
+  <h3>XML Output</h3>
+  <pre><code>http://your-api-domain/api/ip/8.8.4.4?output=xml</code></pre>
+
+  <h3>CSV Output</h3>
+  <pre><code>http://your-api-domain/api/ip/8.8.4.4?output=csv</code></pre>
+
+  <h3>JSONP Callback</h3>
+  <pre><code>http://your-api-domain/api/ip/8.8.4.4?callback=getIPinfo</code></pre>
+
+  <h2>Error Handling</h2>
+  <h3>404 Not Found</h3>
+  <pre><code>{
+    "error": "IP address not found or invalid."
+  }</code></pre>
+
+  <h3>429 Too Many Requests</h3>
+  <pre><code>{
+    "error": "Too many requests, please try again later."
+  }</code></pre>
+
+  <h3>500 Internal Server Error</h3>
+  <pre><code>{
+    "error": "Error retrieving IP data."
+  }</code></pre>
+
+</body>
+</html>
