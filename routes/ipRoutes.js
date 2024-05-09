@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { parse } = require('json2csv');
 const { js2xml } = require('xml-js');
+const rateLimit = require('express-rate-limit');
 
 const TOR_EXIT_LIST_URL = 'https://check.torproject.org/exit-addresses';
 const TOR_EXIT_LOCAL_PATH = path.join(__dirname, 'tor_exit_nodes.txt');
@@ -47,6 +48,16 @@ function filterFields(data, requestedFields) {
 
   return filteredData;
 }
+
+const limiter = rateLimit({
+  windowMs: 60 * 60 * 1000, 
+  max: 50, 
+  message: { error: 'Too many requests, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+router.use('/:ip', limiter);
 
 router.get('/:ip', async (req, res) => {
   const { ip } = req.params;
