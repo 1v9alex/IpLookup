@@ -19,6 +19,8 @@
   "homepage": "https://github.com/1v9alex/IpLookup#readme",
   "dependencies": {
     "axios": "^1.6.8",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "json2csv": "^6.0.0-alpha.2",
+    "xml-js": "^1.6.11"
   }
 }

@@ -3,6 +3,8 @@ const router = express.Router();
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
+const { parse } = require('json2csv');
+const { js2xml } = require('xml-js');
 
 const TOR_EXIT_LIST_URL = 'https://check.torproject.org/exit-addresses';
 const TOR_EXIT_LOCAL_PATH = path.join(__dirname, 'tor_exit_nodes.txt');
@@ -31,6 +33,7 @@ downloadTorExitNodeList();
 
 router.get('/:ip', async (req, res) => {
   const { ip } = req.params;
+  const { output } = req.query;
 
   try {
     const response1 = await axios.get(`http://ipwho.is/${ip}`);
@@ -49,6 +52,8 @@ router.get('/:ip', async (req, res) => {
 
     const result = {
       ip,
+      success: data1.success,
+      message: data1.message,
       type: ipType,
       continent: data1.continent,
       continent_code: data1.continent_code,
@@ -72,7 +77,24 @@ router.get('/:ip', async (req, res) => {
       utc: new Date().toUTCString(),
     };
 
-    return res.json(result);
+    let responseContent;
+    let contentType = 'application/json';
+    switch (output) {
+      case 'xml':
+        responseContent = js2xml({ response: result }, { compact: true, spaces: 4 });
+        contentType = 'application/xml';
+        break;
+      case 'csv':
+        responseContent = parse(result);
+        contentType = 'text/csv';
+        break;
+      default:
+        responseContent = JSON.stringify(result);
+    }
+
+    res.setHeader('Content-Type', contentType);
+    return res.send(responseContent);
+
   } catch (error) {
     console.error('Error:', error.message);
     return res.status(500).json({ error: 'Error retrieving IP data' });
